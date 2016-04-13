@@ -34,7 +34,9 @@
 #include <math.h>
 #include <linux/joystick.h>
 #include <fcntl.h>
-#include <diagnostic_updater/diagnostic_updater.h>
+#ifndef ROS2_JOY
+#  include <diagnostic_updater/diagnostic_updater.h>
+#endif
 #include "ros/ros.h"
 #include <sensor_msgs/Joy.h>
 
@@ -53,9 +55,9 @@ private:
   int pub_count_;
   ros::Publisher pub_;
   double lastDiagTime_;
-  
+#ifndef ROS2_JOY 
   diagnostic_updater::Updater diagnostic_;
-  
+
   ///\brief Publishes diagnostics and status
   void diagnostics(diagnostic_updater::DiagnosticStatusWrapper& stat)
   {
@@ -78,17 +80,21 @@ private:
     pub_count_ = 0;
     lastDiagTime_ = now;
   }
-  
+#endif  
 public:
-  Joystick() : nh_(), diagnostic_()
+  Joystick() : nh_()
+#ifndef ROS2_JOY
+    , diagnostic_()
+#endif
   {}
   
   ///\brief Opens joystick port, reads from port and publishes while node is active
-  int main(int argc, char **argv)
+  int main(int argc __attribute((unused)), char **argv __attribute((unused)))
   {
+#ifndef ROS2_JOY
     diagnostic_.add("Joystick Driver Status", this, &Joystick::diagnostics);
     diagnostic_.setHardwareID("none");
-
+#endif
     // Parameters
     ros::NodeHandle nh_param("~");
     pub_ = nh_.advertise<sensor_msgs::Joy>("joy", 1);
@@ -148,7 +154,9 @@ public:
     while (nh_.ok())
     {                                      
       open_ = false;
+#ifndef ROS2_JOY
       diagnostic_.force_update();
+#endif
       bool first_fault = true;
       while (true)
       {
@@ -175,13 +183,16 @@ public:
           first_fault = false;
         }
         sleep(1.0);
+#ifndef ROS2_JOY
         diagnostic_.update();
+#endif
       }
       
       ROS_INFO("Opened joystick: %s. deadzone_: %f.", joy_dev_.c_str(), deadzone_);
       open_ = true;
+#ifndef ROS2_JOY
       diagnostic_.force_update();
-      
+#endif 
       bool tv_set = false;
       bool publication_pending = false;
       tv.tv_sec = 1;
@@ -214,7 +225,11 @@ public:
             break; // Joystick is probably closed. Definitely occurs.
           
           //ROS_INFO("Read data...");
+#ifndef ROS2_JOY
           joy_msg.header.stamp = ros::Time().now();
+#else
+          // stuff the header timestamp in a different way
+#endif
           event_count_++;
           switch(event.type)
           {
@@ -306,8 +321,9 @@ public:
           tv.tv_sec = 1;
           tv.tv_usec = 0;
         }
-	
+#ifndef ROS2_JOY	
         diagnostic_.update();
+#endif
       } // End of joystick open loop.
       
       close(joy_fd);
