@@ -2,12 +2,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(joy)
 
+set(CATKIN_DEPS roscpp diagnostic_updater sensor_msgs)
+
 find_package(ament_cmake QUIET)
 if (ament_cmake_FOUND)
-  set(CATKIN_DEPS roscpp sensor_msgs)
-  add_definitions(-DROS2_JOY -std=c++11)
+  add_definitions(-D_ROS2 -std=c++11)
 else()
-  set(CATKIN_DEPS roscpp diagnostic_updater sensor_msgs)
 endif()
 
 # Load catkin and all dependencies required for this package
