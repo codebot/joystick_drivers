@@ -211,13 +211,7 @@ public:
             break; // Joystick is probably closed. Definitely occurs.
           
           //ROS_INFO("Read data...");
-#ifndef _ROS2
           joy_msg.header.stamp = ros::Time().now();
-#else
-          ros::Time t(ros::Time::now());
-          joy_msg.header.stamp.sec = t.sec;
-          joy_msg.header.stamp.nanosec = t.nsec;
-#endif
           event_count_++;
           switch(event.type)
           {
