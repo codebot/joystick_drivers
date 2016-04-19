@@ -4,12 +4,6 @@ project(joy)
 
 set(CATKIN_DEPS roscpp diagnostic_updater sensor_msgs)
 
-find_package(ament_cmake QUIET)
-if (ament_cmake_FOUND)
-  add_definitions(-D_ROS2 -std=c++11)
-else()
-endif()
-
 # Load catkin and all dependencies required for this package
 set(ROSDEP_DEPS joystick)
 find_package(catkin REQUIRED ${CATKIN_DEPS})
