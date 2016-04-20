@@ -58,7 +58,7 @@ if __name__ == '__main__':
     test = (foo > bar).any() 
     
     
-    print repr(isGreater)
-    print isBad
-    print test
+    print(repr(isGreater))
+    print(isBad)
+    print(test)
 

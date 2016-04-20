@@ -60,7 +60,7 @@ try:
   #********************
   
   #ac.integrate()
-except WiimoteError, e:
+except WiimoteError as e:
   report(e)
   exit()
 
